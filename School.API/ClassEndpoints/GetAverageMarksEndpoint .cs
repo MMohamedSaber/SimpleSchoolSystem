@@ -13,7 +13,7 @@ public class GetAverageMarksEndpoint : EndpointWithoutRequest
 
     public override void Configure()
     {
-        Get("/api/class/{classId}/average-marks");
+        Post("/api/class/{classId}/average-marks");
         AllowAnonymous();
     }
 

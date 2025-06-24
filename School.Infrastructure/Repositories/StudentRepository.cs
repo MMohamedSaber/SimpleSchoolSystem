@@ -1,8 +1,9 @@
 ﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
+using School.Core.DTOs;
 using School.Core.Entities;
 using School.Core.inerfaces;
 using School.Core.shared;
+using School.Infrastructure.SharedStorage;
 
 namespace School.Infrastructure.Repositories
 {
@@ -83,6 +84,46 @@ namespace School.Infrastructure.Repositories
                 .Take(pagination.PageSize);
 
             return query;
+        }
+
+        public StudentReport StudentReport(string Id)
+        {
+            if (!int.TryParse(Id, out int id))
+                return null;
+
+            var enrollments = EnrolledStorage._enrollment.Values.Where(s => s.StudentId == id).ToList();
+
+            var enrolledClasses = enrollments
+                .Select(e => ClassStorage._classes[e.ClassId])
+                .ToList();
+
+            var allmarks = MarkStorage.Marks.Values.Where(m => m.StudentId == id).ToList();
+
+            decimal average = 0;
+            average = allmarks.Average(m => m.AssignmentMark + m.ExamMark);
+
+            var classReports = enrollments.Select(e =>
+            {
+                var cls = ClassStorage._classes[e.ClassId];
+                var mark = allmarks.FirstOrDefault(m => m.ClassId == cls.Id);
+
+                return new ResponseClass
+                {
+                    Name = cls.Name,
+                    Teacher = cls.Teacher,
+                    Description = cls.Description,
+                    marks =  mark.AssignmentMark + mark.ExamMark 
+                };
+            }).ToList();
+
+            return new StudentReport
+            {
+                Classes = classReports,
+
+                averagemarks = average,
+                FullName = $"{_students[Id.ToString()].FirstName} {_students[Id.ToString()].LastName}"
+            };
+
         }
     }
 }

@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using School.Core.DTOs;
 using School.Core.Entities;
 using School.Core.inerfaces;
+using School.Infrastructure.SharedStorage;
 
 namespace School.Infrastructure.Repositories
 {
     public class EnrollmentRepository : IEnrollmentRepository
     {
-        private readonly ConcurrentDictionary<string, Enrollment> _enrollment = new();
         private int _nextId = 1;
         public bool Add(RequestEnrollment reqEnroments)
         {
@@ -22,10 +22,10 @@ namespace School.Infrastructure.Repositories
                 EnrollmentDate = reqEnroments.EnrollmentDate
             };
 
-            if (_enrollment.ContainsKey(id.ToString()))
+            if (EnrolledStorage._enrollment.ContainsKey(id.ToString()))
                 return false;
 
-            if (_enrollment.TryAdd(enrollment.Id.ToString(), enrollment))
+            if (EnrolledStorage._enrollment.TryAdd(enrollment.Id.ToString(), enrollment))
                 return true ;
 
             return false;

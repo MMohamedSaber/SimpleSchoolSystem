@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using School.Core.Entities;
+﻿using School.Core.Entities;
 using School.Core.inerfaces;
 using School.Core.shared;
+using School.Infrastructure.SharedStorage;
 
 namespace School.Infrastructure.Repositories
 {
     public class ClassRepository : IClassRepository
     {
-        private readonly List<Class> _classes = new List<Class>();
         //private readonly ConcurrentDictionary<string, Mark> _marks = new();
 
 
@@ -20,29 +14,29 @@ namespace School.Infrastructure.Repositories
 
         public bool add(Class c)
         {
-            if (_classes.Any(cl => cl.Id == c.Id))
+            if (ClassStorage._classes.Any(cl => cl.Id == c.Id))
                 return false;
 
-            _classes.Add(c);
+            ClassStorage._classes.Add(c);
             return true;
         }
         public bool Delete(string id)
         {
-            var existing = _classes.FirstOrDefault(c => c.Id.ToString() == id);
+            var existing = ClassStorage._classes.FirstOrDefault(c => c.Id.ToString() == id);
             if (existing == null)
                 return false;
 
-            _classes.Remove(existing);
+            ClassStorage._classes.Remove(existing);
             return true;
         }
         public IEnumerable<Class> GetAll()
         {
-            return _classes;
+            return ClassStorage._classes;
         }
 
         public PaginatedResult<Class> GetAll(PaginationParams pagination)
         {
-            var query = _classes.AsEnumerable();
+            var query = ClassStorage._classes.AsEnumerable();
 
            
             if (!string.IsNullOrWhiteSpace(pagination.Name))
