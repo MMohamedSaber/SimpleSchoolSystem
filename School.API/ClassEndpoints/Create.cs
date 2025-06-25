@@ -23,7 +23,7 @@ namespace School.API.ClassEndpoints
         public override async Task HandleAsync(Class req, CancellationToken ct)
         {
            
-
+             throw new Exception("An error occurred while processing your request.");
             var added = _classRepository.add(req);
 
             if (added)
